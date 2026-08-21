@@ -8,7 +8,7 @@ from dataclasses import asdict, dataclass, field
 from enum import Enum
 from typing import Any, Dict
 
-from .audio import AudioFrame
+from .audio import AudioFrame, FRAME_BYTES
 
 
 class MessageType(str, Enum):
@@ -37,13 +37,15 @@ class AudioFrameMessage:
 
     def to_frame(self) -> AudioFrame:
         payload = base64.b64decode(self.payload_b64.encode("ascii"))
+        if len(payload) != FRAME_BYTES:
+            raise ValueError(f"Expected {FRAME_BYTES} audio bytes, received {len(payload)}")
         return AudioFrame(sequence=self.sequence, timestamp=self.timestamp, payload=payload)
 
 
 @dataclass(slots=True)
 class HeartbeatMessage:
     message_type: MessageType = MessageType.HEARTBEAT
-    timestamp: float = time.time()
+    timestamp: float = field(default_factory=time.time)
 
 
 @dataclass(slots=True)

@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import threading
+from dataclasses import asdict
 from queue import Empty, Queue
 from tkinter import BOTH, END, LEFT, RIGHT, Button, Frame, Label, Listbox, Scrollbar, Tk
 from tkinter import messagebox
@@ -57,7 +58,7 @@ class ServerApp:
         self.status_label.pack(fill=BOTH, padx=10, pady=5)
 
     def _save_config(self) -> None:
-        self.config_data["server"] = self.server_config.__dict__
+        self.config_data["server"] = asdict(self.server_config)
         save_config(self.config_data)
         messagebox.showinfo("Config Saved", "Server configuration saved to audio_suite.yaml")
 

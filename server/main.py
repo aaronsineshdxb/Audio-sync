@@ -5,7 +5,7 @@ import asyncio
 import contextlib
 import signal
 import ssl
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Dict, Optional, Set
 
@@ -14,6 +14,7 @@ from websockets import WebSocketServerProtocol
 
 from common.config import ServerConfig, load_config
 from common.logging_utils import configure_logging
+from common.platform_utils import install_signal_handlers
 from common.protocol import (
     AudioFrameMessage,
     MessageType,
@@ -142,7 +143,7 @@ class AudioServer:
             await self._status_queue.put({
                 "event": "control",
                 "from": peer.role,
-                "payload": message.__dict__,
+                "payload": asdict(message),
             })
 
     async def _broadcast_audio(self, peer: Peer, message: AudioFrameMessage) -> None:
@@ -191,8 +192,7 @@ async def _main(config_path: Optional[Path] = None) -> None:
         LOGGER.info("Signal received, shutting down")
         stop_event.set()
 
-    for sig in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(sig, _handle_signal)
+    install_signal_handlers(loop, _handle_signal)
 
     server_task = asyncio.create_task(server.start())
 

@@ -15,6 +15,7 @@ from websockets import WebSocketClientProtocol
 from common.audio import AudioCapture, AudioFrame
 from common.config import TransmitterConfig, load_config
 from common.logging_utils import configure_logging
+from common.platform_utils import install_signal_handlers
 from common.protocol import AudioFrameMessage, HeartbeatMessage, make_handshake, serialize_message
 
 LOGGER = configure_logging(name="transmitter")
@@ -226,8 +227,7 @@ async def _main(config_path: Optional[Path] = None) -> None:
         client.request_stop()
         stop_event.set()
 
-    for sig in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(sig, _handle_signal)
+    install_signal_handlers(loop, _handle_signal)
 
     client_task = asyncio.create_task(client.run())
     await stop_event.wait()

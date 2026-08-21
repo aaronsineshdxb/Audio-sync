@@ -1,7 +1,7 @@
 """Configuration management utilities."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Optional
 
@@ -35,9 +35,9 @@ def load_config(path: Optional[Path] = None) -> dict:
     path = path or Path(CONFIG_FILE_NAME)
     if not path.exists():
         return {
-            "server": ServerConfig().__dict__,
-            "transmitter": TransmitterConfig().__dict__,
-            "client": ClientConfig().__dict__,
+            "server": asdict(ServerConfig()),
+            "transmitter": asdict(TransmitterConfig()),
+            "client": asdict(ClientConfig()),
         }
     with path.open("r", encoding="utf8") as fh:
         data = yaml.safe_load(fh) or {}

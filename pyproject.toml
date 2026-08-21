@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "realtime-audio-suite"
+version = "0.2.0"
+description = "Realtime audio streaming suite: server, transmitter, and client over WebSockets"
+requires-python = ">=3.10"
+dependencies = [
+    "sounddevice==0.4.7",
+    "websockets==12.0",
+    "numpy==1.26.4",
+    "pyyaml==6.0.2",
+]
+
+[project.optional-dependencies]
+gui = ["pyobjc-framework-Cocoa; sys_platform == 'darwin'"]
+
+[project.scripts]
+audio-server = "server.main:run_server"
+audio-transmitter = "transmitter.main:run_transmitter"
+audio-client = "client.main:run_client"
+audio-server-gui = "server.gui:launch"
+audio-transmitter-gui = "transmitter.gui:launch"
+audio-client-gui = "client.gui:launch"
+
+[tool.setuptools]
+packages = ["common", "server", "transmitter", "client"]
